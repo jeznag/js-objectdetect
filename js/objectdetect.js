@@ -680,6 +680,7 @@ var objectdetect = (function() {
 			this.numScales = ~~(Math.log(Math.min(width / classifier[0], height / classifier[1])) / Math.log(scaleFactor));
 			this.scaledGray = new Uint32Array(width * height);
 			this.compiledClassifiers = [];
+			this.threshold = 30;
 			var scale = 1;
 			for (var i = 0; i < this.numScales; ++i) {
 				var scaledWidth = ~~(width / scale);
@@ -738,7 +739,85 @@ var objectdetect = (function() {
 			}				
 			return (group ? objectdetect.groupRectangles(rects, group) : rects).sort(function(r1, r2) {return r2[4] - r1[4];});
 		};
-		
+
+		detector.prototype.findEdges = function(image, boundingBox, outContext) {
+			var width = this.canvas.width;
+			var height = this.canvas.height;
+			this.context.drawImage(image, 0, 0, width, height);
+			var imageData = this.context.getImageData.apply(boundingBox);
+			var x = 0;
+		    var y = 0;
+
+		    var left = undefined;
+		    var top = undefined;
+		    var right = undefined;
+		    var bottom = undefined;
+
+		    for(y=0;y<this.pixelData.height;y++){
+		        for(x=0;x<this.pixelData.width;x++){
+		            // get this pixel's data
+		            // currently, we're looking at the blue channel only.
+		            // Since this is a B/W photo, all color channels are the same.
+		            // ideally, we would make this work for all channels for color photos.
+		            index = (x + y * this.ctxDimensions.width) * 4;
+		            pixel = this.pixelData.data[index+2];
+
+		            // Get the values of the surrounding pixels
+		            // Color data is stored [r,g,b,a][r,g,b,a]
+		            // in sequence.
+		            left = this.pixelData.data[index-4];
+		            right = this.pixelData.data[index+2];
+		            top = this.pixelData.data[index-(this.ctxDimensions.width*4)];
+		            bottom = this.pixelData.data[index+(this.ctxDimensions.width*4)];
+
+		            //Compare it all.
+		            // (Currently, just the left pixel)
+		            if(pixel>left+this.threshold){
+		                this.plotPoint(x, y, outContext);
+		            }
+		            else if(pixel<left-this.threshold){
+		                this.plotPoint(x, y, outContext);
+		            }
+		            else if(pixel>right+this.threshold){
+		                this.plotPoint(x, y, outContext);
+		            }
+		            else if(pixel<right-this.threshold){
+		                this.plotPoint(x, y, outContext);
+		            }
+		            else if(pixel>top+this.threshold){
+		                this.plotPoint(x, y, outContext);
+		            }
+		            else if(pixel<top-this.threshold){
+		                this.plotPoint(x, y, outContext);
+		            }
+		            else if(pixel>bottom+this.threshold){
+		                this.plotPoint(x, y, outContext);
+		            }
+		            else if(pixel<bottom-this.threshold){
+		                this.plotPoint(x, y, outContext);
+		            }
+		        }
+		    }
+		}
+
+		detector.prototype.plotPoint = function (x, y, context) {
+			context.beginPath();
+	      	context.arc(x, y, 0.5, 0, 2 * Math.PI, false);
+	      	context.fillStyle = 'green';
+	      	context.fill();
+	      	context.beginPath();
+
+	     //  	// Copy onto the raw canvas
+		    // // this is probably the most useful application of this,
+		    // // as you would then have raw data of the edges that can be used.
+
+	     //  	this.rawctx.beginPath();
+	     //  	this.rawctx.arc(x, y, 0.5, 0, 2 * Math.PI, false);
+	     //  	this.rawctx.fillStyle = 'green';
+	     //  	this.rawctx.fill();
+	     //  	this.rawctx.beginPath();	
+		}
+
 		return detector;
 	})();
 	

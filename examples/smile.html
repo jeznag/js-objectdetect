@@ -11,13 +11,14 @@
     <script src='js/smoother.js'></script>
     
     <script src='js/objectdetect.js'></script>
+    <script src='js/Sobel.js'></script>
     <script src='js/objectdetect.frontalface.js'></script>
     <script src='js/objectdetect.mouth.js'></script>
     <script src='js/objectdetect.smile.js'></script>
     <script src='js/objectdetect.eye.js'></script>
     <script>
     var video, canvas, context, outContext, orange, fruitBack,
-            mouthDetector, eyeDetector, faceDetector,
+            mouthDetector, smileDetector, eyeDetector, faceDetector,
             mouthRect, leftEyeRect, rightEyeRect;
     
     var orange = {
@@ -37,7 +38,8 @@
         outContext = outCanvas.getContext('2d'),
         fruitFront = document.getElementById('orange'),
         fruitBack = document.getElementById('orange_back'),
-        mouthDetector = new objectdetect.detector(~~(25*1.5), ~~((15 + 6)*1.5), 1.05, objectdetect.smile),
+        mouthDetector = new objectdetect.detector(~~(25*1.5), ~~((15 + 6)*1.5), 1.05, objectdetect.mouth),
+        smileDetector = new objectdetect.detector(~~(25*1.5), ~~((15 + 6)*1.5), 1.05, objectdetect.smile),
 
         eyeDetector = new objectdetect.detector(20*1.5, 20*1.5, 1.1, objectdetect.eye),
         faceDetector;
@@ -102,7 +104,7 @@
             var rectROI = [~~(faceRect[0] + faceRect[2] * fruit.mouth[0]), ~~(faceRect[1] + faceRect[3] * fruit.mouth[1]), ~~(faceRect[2] * fruit.mouth[2]), ~~(faceRect[2] * fruit.mouth[3] * mouthDetector.canvas.height / mouthDetector.canvas.width)];
             var mouthRects = inRect(rectROI, 0, 0, video.videoWidth, video.videoHeight) && mouthDetector.detect(video, 1, 1, rectROI);
             if (mouthRects[0]) {
-                console.log(mouthRects[0]);
+
                 mouthRect = mouthRects[0];
                 
                 mouthRect[0] = rectROI[0] + mouthRect[0] * rectROI[2] / mouthDetector.canvas.width;
@@ -136,8 +138,19 @@
             }
         }
         
-        if (mouthRect) // Draw mouth on video overlay:
+        if (mouthRect) { // Draw mouth on video overlay:
                 outContext.drawImage(video, mouthRect[0], mouthRect[1], mouthRect[2], mouthRect[3], fruit.mouthOut[0] , fruit.mouthOut[1], fruit.mouthOut[2], fruit.mouthOut[3]);
+        }
+
+        if (mouthRects && mouthRects[0]) {
+            var totalEdges = smileDetector.findEdges(video, mouthRects[0], outContext, rectROI);
+            var emotion = 'neutral';
+
+            if (totalEdges > 30) {
+                emotion = 'happy';
+            }
+            document.querySelector('#totalEdges').innerHTML = 'Looks like you\'re ' + emotion + ' ' + totalEdges;
+        }
             
         if (rightEyeRect) // Draw rightEye on video overlay:
                 outContext.drawImage(video, rightEyeRect[0], rightEyeRect[1], rightEyeRect[2], rightEyeRect[3], fruit.leftEyeOut[0], fruit.leftEyeOut[1], fruit.leftEyeOut[2], fruit.leftEyeOut[3]);
@@ -275,7 +288,8 @@
     
     <!--<canvas id='canvas'></canvas>-->
     <canvas id='outCanvas'></canvas>
-    
+
+    <div id="totalEdges"></div>
     <img style='display:none' id='orange' src='img/orange.png'>
     <img style='display:none' id='orange_back' src='img/orange_back.png'>
     
