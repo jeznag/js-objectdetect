@@ -1,0 +1,17 @@
+#postureStatus {
+    width: 100px;
+    color: white;
+    text-align: center;
+    font-size: 20px;
+}
+
+#video {
+    float: left;
+    margin-right: 1em;
+}
+
+#glasses, #pain {
+    position: absolute;
+    display: block;
+    opacity: 0;
+}
