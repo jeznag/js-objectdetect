@@ -12,6 +12,7 @@
 	
 	<script src="../js/objectdetect.js"></script>
 	<script src="../js/objectdetect.handfist.js"></script>
+	<script src="../js/objectdetect.smile.js"></script>
 	
 	<script>
 	window.onload = function() {
@@ -54,18 +55,18 @@
 	          	if (!detector) {
 		      		var width = ~~(140 * video.videoWidth / video.videoHeight);
 					var height = 140;
-		      		detector = new objectdetect.detector(width, height, 1.1, objectdetect.handfist);
+		      		detector = new objectdetect.detector(width, height, 1.1, objectdetect.smile);
 		      	}
           		
           		// Smooth rotation of the 3D object:
 				angle = smoother.smooth(angle);
 				document.getElementById('transform_a').setAttribute('rotation', '0 1 0 ' + angle[0]); 
 				document.getElementById('transform_b').setAttribute('rotation', '1 0 0 ' + angle[1]); 
-	
           		// Perform the actual detection:
 				var coords = detector.detect(video, 1);
-				
+				console.log(JSON.stringify(coords));
 				if (coords[0]) {
+
 					var coord = coords[0];
 					
 					// Rescale coordinates from detector to video coordinate space:

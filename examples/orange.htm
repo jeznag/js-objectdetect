@@ -37,6 +37,7 @@
 		fruitFront = document.getElementById('orange'),
 		fruitBack = document.getElementById('orange_back'),
 		mouthDetector = new objectdetect.detector(~~(25*1.5), ~~((15 + 6)*1.5), 1.05, objectdetect.mouth),
+
 		eyeDetector = new objectdetect.detector(20*1.5, 20*1.5, 1.1, objectdetect.eye),
 		faceDetector;
 		
@@ -100,6 +101,7 @@
 			var rectROI = [~~(faceRect[0] + faceRect[2] * fruit.mouth[0]), ~~(faceRect[1] + faceRect[3] * fruit.mouth[1]), ~~(faceRect[2] * fruit.mouth[2]), ~~(faceRect[2] * fruit.mouth[3] * mouthDetector.canvas.height / mouthDetector.canvas.width)];
 			var mouthRects = inRect(rectROI, 0, 0, video.videoWidth, video.videoHeight) && mouthDetector.detect(video, 1, 1, rectROI);
 			if (mouthRects[0]) {
+				console.log('mouthRects', mouthRects.length);
 				mouthRect = mouthRects[0];
 				
 				mouthRect[0] = rectROI[0] + mouthRect[0] * rectROI[2] / mouthDetector.canvas.width;
