@@ -1,0 +1,87 @@
+body {
+    background-image: url('img/bg_xhdpi.jpg');
+    background-size: cover;
+    font-family: Helvetica, Arial, Sans-Serif;
+    color: #222;
+    padding: 0 1em;
+}
+
+.modal {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 0, 0, 0, .8 ) 
+                url('img/loading.gif') 
+                50% 50% 
+                no-repeat;
+}
+
+body.loading {
+    overflow: hidden;   
+}
+
+body.loading .modal {
+    display: block;
+}
+
+div.list {
+    padding: 0.2em;
+    font-weight: bold;
+}
+
+div.list img {
+    width: 30px;
+    height: 34px;
+    background-color: rgba(127,127,127,0.2);
+    border-radius: 3px;
+}
+
+div.list img:hover {
+    background-color: rgba(127,127,127,0.8);
+}
+
+canvas {
+    width: 566px;
+    height: 680px;
+    float:left;
+    margin: 0 10px 10px 0;
+    border-radius: 15px;
+    background-color: #F9F3E6;
+}
+
+button {
+    background-image: url('img/camera.png');
+    background-repeat: no-repeat;
+    background-position: 20px 3px;
+    background-color: rgba(127,127,127,0.2);
+    padding-left: 30px;
+    border: none;
+    border-radius: 3px;
+    width: 250px;
+    height: 34px;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: rgba(127,127,127,0.8);
+}
+
+a:link {
+color: #000;
+}
+
+a:visited {
+color: #888;
+}
+
+a:hover {
+color: #AAA;
+}
+
+a:active {
+color: #222;
+}

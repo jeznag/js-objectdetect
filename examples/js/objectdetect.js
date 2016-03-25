@@ -743,7 +743,7 @@ var objectdetect = (function() {
 			return (group ? objectdetect.groupRectangles(rects, group) : rects).sort(function(r1, r2) {return r2[4] - r1[4];});
 		};
 
-		detector.prototype.findEdges = function(image, boundingBox, outContext, rectangleOfInterest) {
+		detector.prototype.findEdges = function(image, boundingBox, outContext) {
 			if (!this.canvas2) {	
 				this.canvas2 = document.createElement('canvas');
 				document.body.appendChild(this.canvas2);
@@ -756,7 +756,7 @@ var objectdetect = (function() {
 		  	};
 			var width = this.ctxDimensions.width;
 			var height = this.ctxDimensions.height;
-			var threshold = 30;
+
 			this.context2.drawImage(image, boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], 0, 0, boundingBox[2], boundingBox[3]);
 			var imageData = this.context2.getImageData(0, 0, boundingBox[2], boundingBox[3]);
 
@@ -765,7 +765,7 @@ var objectdetect = (function() {
 			// [sobelData].toImageData() returns a new ImageData object
 			var sobelImageData = sobelData.toImageData();
 			this.context2.putImageData(sobelImageData, 0, 0);
-			return sobelData.edgePoints;
+			return sobelData;
 		}
 		
 		return detector;

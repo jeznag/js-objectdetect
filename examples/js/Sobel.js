@@ -35,7 +35,10 @@
     var data = imageData.data;
     var pixelAt = bindPixelAt(data);
     var x, y;
-    var edgePoints = 0;
+    var edgePoints = [];
+    var totalEdgePoints = 0;
+    var topLeftEdgePointX = 1000;
+    var topLeftEdgePointY = 1000;
 
     for (y = 0; y < height; y++) {
       for (x = 0; x < width; x++) {
@@ -77,12 +80,22 @@
         );
 
         var magnitude = Math.sqrt((pixelX * pixelX) + (pixelY * pixelY))>>>0;
+        // sobelData.push(magnitude, magnitude, magnitude, 255);
 
-        if (magnitude > 70 && y > 30 && y < height - 30 && x > 10 && x < width - 10) {
-          edgePoints++;
-          sobelData.push(255,0,255,0.3);
+        if (magnitude > 120 && y > (height / 3) && y < (height - (height / 2)) && x > (width / 5) && x < (width - width / 5)) {
+          totalEdgePoints++;
+          if (x <= topLeftEdgePointX && y < topLeftEdgePointY) {
+            topLeftEdgePointX = x;
+            topLeftEdgePointY = y;
+            edgePoints.push({x: x, y: y});
+            sobelData.push(magnitude, magnitude, magnitude, 0.3);
+          } else {
+            sobelData.push(255, magnitude, magnitude, 255);
+          }
+          // console.log(topLeftEdgePointX;'x', x, 'y', y);
+          // console.log(topLeftEdgePointX;'x', x, 'y', y);
+          // sobelData.push(255,0,255,0.3);
 
-          // sobelData.push(magnitude, magnitude, magnitude, 255);
         } else {
           sobelData.push(magnitude, magnitude, magnitude, 255);
         }
@@ -100,6 +113,11 @@
     };
 
     clampedArray.edgePoints = edgePoints;
+    clampedArray.totalEdgePoints = totalEdgePoints;
+    clampedArray.topLeft = {
+      x: topLeftEdgePointX,
+      y: topLeftEdgePointY
+    }
 
     return clampedArray;
   }
