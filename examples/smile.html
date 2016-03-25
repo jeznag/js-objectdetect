@@ -5,7 +5,7 @@
     <meta name='description' content='HTML5 WebRTC-Demo und JavasScript Gesichtserkennung'>
     <meta name='keywords' content='Gesichtserkennung'>
 
-    <title>HTML5 WebRTC-Demo und JavasScript Gesichtserkennung</title>
+    <title>Smile Score</title>
     
     <script src='js/compatibility.js'></script>
     <script src='js/smoother.js'></script>
@@ -19,7 +19,8 @@
     <script>
     var video, canvas, context, outContext, orange, fruitBack,
             mouthDetector, smileDetector, eyeDetector, faceDetector,
-            mouthRect, leftEyeRect, rightEyeRect;
+            mouthRect, leftEyeRect, rightEyeRect,
+            topScore = 0;
     
     var orange = {
         'mouth': [1.5/10, 5.5/10, 7/10, 7/10],
@@ -144,12 +145,24 @@
 
         if (mouthRects && mouthRects[0]) {
             var totalEdges = smileDetector.findEdges(video, mouthRects[0], outContext, rectROI);
-            var emotion = 'neutral';
+            var message = 'You call that a smile? Come on - smile for the camera!';
 
             if (totalEdges > 30) {
-                emotion = 'happy';
+                message = 'Awesome! Looking good:) Your smile score is ' + totalEdges + '.';
             }
-            document.querySelector('#totalEdges').innerHTML = 'Looks like you\'re ' + emotion + ' ' + totalEdges;
+
+            message += ' Your highest score was ' + topScore;
+
+            if (totalEdges > topScore) {
+                topScore = totalEdges;
+                var highScore = document.getElementById('highScore');
+                highScore.textContent = 'Woot! New high score! ' + topScore;
+                setTimeout(function() {
+                  highScore.textContent = '';
+                }, 2500);
+            }
+
+            document.querySelector('#totalEdges').innerHTML = message;
         }
             
         if (rightEyeRect) // Draw rightEye on video overlay:
@@ -284,18 +297,19 @@
 
 <body>
     <div class='modal'></div>
-    <h1>You the Orange</h1>
+    <h1>The Smile Challenge</h1>
     
     <!--<canvas id='canvas'></canvas>-->
     <canvas id='outCanvas'></canvas>
 
+    <div id="highScore" style="background-color:green;color:white;font-size:14px;"></div>
     <div id="totalEdges"></div>
     <img style='display:none' id='orange' src='img/orange.png'>
     <img style='display:none' id='orange_back' src='img/orange_back.png'>
     
-    <button id='button'>Schnappschuss teilen</button>
+    <button id='button'>Take a screenshot</button>
     <p>
-    Benötigt eine Webcam sowie einen modernen Browser mit WebRTC-Unterstützung wie Firefox oder Chrome.
+    What's your smile score? You'll need to use a modern browser to try this.
     </p>
     </div>
 </body>
